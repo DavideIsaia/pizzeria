@@ -14,12 +14,12 @@ import model.Utente;
 
 public class UtenteDAO {
 
-		static EntityManagerFactory emf = JPAAgent.getEntityManagerFactory();
-		static EntityManager em = emf.createEntityManager();
+	static EntityManagerFactory emf = JPAAgent.getEntityManagerFactory();
+	static EntityManager em = emf.createEntityManager();
 
-	public static Utente loginUtente(String username, String password) {
+	public Utente loginUtente(String username, String password) {
 
-		List<Utente> listaUtenti = new ArrayList();
+		List<Utente> listaUtenti = new ArrayList<Utente>();
 		TypedQuery<Utente> query = em.createQuery(
 				"select u from Utente u where u.username = :username and u.password = :password", Utente.class);
 		query.setParameter("username", username);
@@ -28,41 +28,40 @@ public class UtenteDAO {
 		return listaUtenti.isEmpty() ? null : listaUtenti.get(0);
 	}
 
-	public static List<Impasto> getAllImpasti() {
-		List<Impasto> listaImpasti = new ArrayList();
+	public List<Impasto> getAllImpasti() {
+		List<Impasto> listaImpasti = new ArrayList<Impasto>();
 		TypedQuery<Impasto> query = em.createQuery("SELECT i FROM Impasto i", Impasto.class);
 		listaImpasti = query.getResultList();
 		return listaImpasti;
 	}
 	
-	public static Impasto getImpastoById(int id) {
-		Impasto impasto = new Impasto();
-		TypedQuery<Impasto> query = em.createQuery("SELECT i FROM Impasto i WHERE i.id = :id", Impasto.class);
-		query.setParameter("id", id);
-		impasto = query.getSingleResult();
+	public Impasto getImpastoById(int id) {
+		Impasto impasto = em.find(Impasto.class, id);
 		return impasto;
 		
 	}
 
-	public static List<Ingrediente> getAllIngredienti() {
-		List<Ingrediente> listaIngredienti = new ArrayList();
+	public List<Ingrediente> getAllIngredienti() {
+		List<Ingrediente> listaIngredienti = new ArrayList<Ingrediente>();
 		TypedQuery<Ingrediente> query = em.createQuery("SELECT i FROM Ingrediente i", Ingrediente.class);
 		listaIngredienti = query.getResultList();
 		return listaIngredienti;
 	}
 
-	public static Ingrediente getIngredienteById(int id) {
-		Ingrediente ingrediente = new Ingrediente();
-		TypedQuery<Ingrediente> query = em.createQuery("SELECT i FROM Ingrediente i WHERE i.id = :id", Ingrediente.class);
-		query.setParameter("id", id);
-		ingrediente = query.getSingleResult();
+	public Ingrediente getIngredienteById(int id) {
+		Ingrediente ingrediente = em.find(Ingrediente.class, id);
 		return ingrediente;
 	}
 
-	public static List<Pizza> getlistaPizze() {
-		List<Pizza> listaPizze = new ArrayList();
-		TypedQuery<Pizza> query = em.createQuery("SELECT i FROM Pizza i", Pizza.class);
-		listaPizze = query.getResultList();
-		return listaPizze;
+	public List<Pizza> getlistaPizze(int id) {
+		em = JPAAgent.getEntityManagerFactory().createEntityManager();
+		Utente utente = em.find(Utente.class, id);
+		em.refresh(utente);
+		return utente.getListaPizze();
+	}
+	
+	public Pizza getPizzaById(int id) {
+		Pizza pizza = em.find(Pizza.class, id);
+		return pizza;
 	}
 }

@@ -1,11 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
   pageEncoding="ISO-8859-1"%>
-<%@page import="model.Utente"%>
-<%@page import="model.Impasto"%>
-<%@page import="model.Ingrediente"%>
-<%@page import="model.Pizza"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
+<%@page import="model.*"%>
+<%@page import="java.util.*"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,7 +22,6 @@ table {
 input, button {
 	cursor: pointer;
 }
-
 .save {
 	margin-left: 50px;
 	margin-bottom: 20px;
@@ -34,14 +29,9 @@ input, button {
 </style>
 </head>
 <body>
-  <form method="POST" action="/PIZZERIA/InserisciPizza">
-    <%
-    Utente utente = (Utente) session.getAttribute("utenteTrovato");
-    %>
-    <h2 align="center">
-      Bentornato
-      <%=utente.getUsername()%>!
-    </h2>
+  <form method="POST" action="/PIZZERIA/PizzaServlet">
+    <%Utente utente = (Utente) session.getAttribute("utenteTrovato");%>
+    <h2 align="center">Bentornato <%=utente.getUsername()%>!</h2>
     <table border="1" align="center" cellpadding="3" cellspacing="4">
       <thead>
         <tr bgcolor="eab676">
@@ -59,9 +49,7 @@ input, button {
             style="transform: scale(1.5);" value="<%=impasto.getId()%>"></td>
           <td><%=impasto.getNome()%></td>
         </tr>
-        <%
-        }
-        %>
+        <%}%>
 
       </tbody>
     </table>
@@ -84,19 +72,17 @@ input, button {
             value="<%=ingrediente.getId()%>"></td>
           <td><%=ingrediente.getNome()%></td>
         </tr>
-        <%
-        }
-        %>
+        <%}%>
       </tbody>
     </table>
     <div class="save">
       <label for="nomePizza" style="font-size: 16px">Nome pizza:</label>
       <input type="text" id="nomePizza" name="nomePizza">
-      <button type="submit" style="font-size: 16px;">Salva</button>
+      <button type="SUBMIT" name="CreaPizza" value="DiversoDaNull" style="font-size: 16px;">Salva</button>
     </div>
   </form>
-  
-  <form method="POST" action="/PIZZERIA/InserisciPizza">
+
+  <form method="POST" action="/PIZZERIA/PizzaServlet">
     <table border="1" align="center" cellpadding="3" cellspacing="4">
       <thead>
         <tr bgcolor="efc000">
@@ -108,27 +94,27 @@ input, button {
       </thead>
       <tbody>
         <%
-        ArrayList<Pizza> listaPizze = (ArrayList<Pizza>) request.getAttribute("listaPizze");
+       List<Pizza> listaPizze = (List<Pizza>) request.getAttribute("listaPizze");
         for (Pizza pizza : listaPizze) {
         %>
         <tr>
           <td><%=pizza.getNome()%></td>
           <td><%=pizza.getImpasto().getNome()%></td>
           <td>
-            <%
-            List<Ingrediente> listaIngr = (List<Ingrediente>) pizza.getListaIngredienti();
-            for (Ingrediente ingr : listaIngr) {
-            %> <%=ingr.getNome()%> 
+            <%List<Ingrediente> listaIngr = (List<Ingrediente>) pizza.getListaIngredienti();
+            for (Ingrediente ingr : listaIngr) { %> 
+              <%=ingr.getNome()%> 
             <%}%>
           </td>
-          <td><a href="/PIZZERIA/edit.jsp"
-            style="background-color: #84e2ff;">Modifica</a>
-              <button type="submit" name="CancellaPizza" value="<%=pizza.getId()%>"
-                style="background-color: #ff7474;">Cancella</button>
-                
+          <td>
+              <a style="background-color: #84e2ff" href="<%=request.getContextPath() %>/EditPizza?idPizza=<%=pizza.getId()%>">
+                Modifica
+              </a>
+            <button type="SUBMIT" name="CancellaPizza" style="background-color: #ff7474"
+              value="<%=pizza.getId()%>">Cancella</button>
           </td>
         </tr>
-        <% } %>
+        <%}%>
       </tbody>
     </table>
   </form>

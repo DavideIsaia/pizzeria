@@ -13,26 +13,34 @@ import javax.servlet.http.HttpSession;
 
 import dao.PizzaDAO;
 import dao.UtenteDAO;
+import model.Impasto;
 import model.Ingrediente;
 import model.Pizza;
 import model.Utente;
 
-@WebServlet("/InserisciPizza")
-public class InserisciPizza extends HttpServlet {
+@WebServlet("/PizzaServlet")
+public class PizzaServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private UtenteDAO utenteDAO;
+	private PizzaDAO pizzaDAO;
 
-	public InserisciPizza() {
+	public PizzaServlet() {
 		super();
+		utenteDAO = new UtenteDAO();
+		pizzaDAO = new PizzaDAO();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		if (request.getParameter("CancellaPizza") != null) {
+		if(request.getParameter("CancellaPizza") != null) {
 			deletePizza(Integer.parseInt(request.getParameter("CancellaPizza")), request, response);
-		} else {
+		} else if(request.getParameter("CreaPizza") != null) {
 			creaPizza(request, response);
+		} else {
+			caricaPagina(request, response);
 		}
 	}
+
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -55,32 +63,50 @@ public class InserisciPizza extends HttpServlet {
 		Pizza nuovaPizza = new Pizza();
 		nuovaPizza.setNome(nomePizza);
 		nuovaPizza.setUtente(utente);
-		nuovaPizza.setImpasto(UtenteDAO.getImpastoById(idImpasto));
+		nuovaPizza.setImpasto(utenteDAO.getImpastoById(idImpasto));
 
 		// aggiungo gli ingredienti
 		ArrayList<Ingrediente> ingredienti = new ArrayList<Ingrediente>();
 		for (String id : idIngredienti) {
-			ingredienti.add(UtenteDAO.getIngredienteById(Integer.parseInt(id)));
+			ingredienti.add(utenteDAO.getIngredienteById(Integer.parseInt(id)));
 		}
 		nuovaPizza.setListaIngredienti(ingredienti);
 
 		// salvo la nuova pizza nel db
-		PizzaDAO.savePizza(nuovaPizza);
+		pizzaDAO.savePizza(nuovaPizza);
 
+		//ritorno alla dashoboard con i nuovi dati
+		int id_user = utente.getId();
+		request.setAttribute("listaIngredienti", utenteDAO.getAllIngredienti());
+		request.setAttribute("listaImpasti", utenteDAO.getAllImpasti());
+		request.setAttribute("listaPizze", utenteDAO.getlistaPizze(id_user));
 		RequestDispatcher rd = request.getRequestDispatcher("dashboard.jsp");
-		request.setAttribute("listaIngredienti", UtenteDAO.getAllIngredienti());
-		request.setAttribute("listaImpasti", UtenteDAO.getAllImpasti());
-		request.setAttribute("listaPizze", UtenteDAO.getlistaPizze());
 		rd.forward(request, response);
 	}
 
 	public void deletePizza(int id, HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		PizzaDAO.deletePizza(id);
+		pizzaDAO.deletePizza(id);
+		//ritorno alla dashoboard con i nuovi dati
+		HttpSession session = request.getSession(true);
+		Utente utente = (Utente) session.getAttribute("utenteTrovato");
+		int id_user = utente.getId();
 		RequestDispatcher rd = request.getRequestDispatcher("dashboard.jsp");
-		request.setAttribute("listaIngredienti", UtenteDAO.getAllIngredienti());
-		request.setAttribute("listaImpasti", UtenteDAO.getAllImpasti());
-		request.setAttribute("listaPizze", UtenteDAO.getlistaPizze());
+		request.setAttribute("listaIngredienti", utenteDAO.getAllIngredienti());
+		request.setAttribute("listaImpasti", utenteDAO.getAllImpasti());
+		request.setAttribute("listaPizze", utenteDAO.getlistaPizze(id_user));
+		rd.forward(request, response);
+	}
+	
+	private void caricaPagina(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		HttpSession session = request.getSession(true);
+		Utente utente = (Utente) session.getAttribute("utenteTrovato");
+		int id_user = utente.getId();
+		request.setAttribute("listaImpasti", utenteDAO.getAllImpasti());
+		request.setAttribute("listaIngredienti", utenteDAO.getAllIngredienti());
+		request.setAttribute("listaPizze", utenteDAO.getlistaPizze(id_user));	
+		RequestDispatcher rd = request.getRequestDispatcher("dashboard.jsp");
 		rd.forward(request, response);
 	}
 
