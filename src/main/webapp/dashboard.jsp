@@ -30,7 +30,12 @@ input, button {
 </head>
 <body>
   <form method="POST" action="/PIZZERIA/PizzaServlet">
-    <%Utente utente = (Utente) session.getAttribute("utenteTrovato");%>
+    <% 
+      Utente utente = (Utente) session.getAttribute("utenteTrovato");
+      List<Impasto> listaImpasti = (List<Impasto>) request.getAttribute("listaImpasti");
+      List<Ingrediente> listaIngredienti = (List<Ingrediente>) request.getAttribute("listaIngredienti");
+      List<Pizza> listaPizze = (List<Pizza>) request.getAttribute("listaPizze");
+    %>
     <h2 align="center">Bentornato <%=utente.getUsername()%>!</h2>
     <table border="1" align="center" cellpadding="3" cellspacing="4">
       <thead>
@@ -41,8 +46,7 @@ input, button {
       </thead>
       <tbody>
         <%
-        ArrayList<Impasto> listaImpasti = (ArrayList<Impasto>) request.getAttribute("listaImpasti");
-        for (Impasto impasto : listaImpasti) {
+          for (Impasto impasto : listaImpasti) {
         %>
         <tr>
           <td><input type="radio" name="idImpasto"
@@ -63,8 +67,7 @@ input, button {
       </thead>
       <tbody>
         <%
-        ArrayList<Ingrediente> listaIngredienti = (ArrayList<Ingrediente>) request.getAttribute("listaIngredienti");
-        for (Ingrediente ingrediente : listaIngredienti) {
+          for (Ingrediente ingrediente : listaIngredienti) {
         %>
         <tr>
           <td><input type="checkbox" name="idIngredienti"
@@ -94,8 +97,7 @@ input, button {
       </thead>
       <tbody>
         <%
-       List<Pizza> listaPizze = (List<Pizza>) request.getAttribute("listaPizze");
-        for (Pizza pizza : listaPizze) {
+          for (Pizza pizza : listaPizze) {
         %>
         <tr>
           <td><%=pizza.getNome()%></td>
@@ -114,7 +116,9 @@ input, button {
               value="<%=pizza.getId()%>">Cancella</button>
           </td>
         </tr>
-        <%}%>
+        <%
+          }
+        %>
       </tbody>
     </table>
   </form>

@@ -56,7 +56,6 @@ public class UtenteDAO {
 	public List<Pizza> getlistaPizze(int id) {
 		em = JPAAgent.getEntityManagerFactory().createEntityManager();
 		Utente utente = em.find(Utente.class, id);
-		em.refresh(utente);
 		return utente.getListaPizze();
 	}
 	

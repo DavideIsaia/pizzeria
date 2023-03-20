@@ -10,10 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import dao.PizzaDAO;
 import dao.UtenteDAO;
 import model.Utente;
-import model.Impasto;
 
 @WebServlet("/Login")
 public class Login extends HttpServlet {

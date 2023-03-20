@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import model.Impasto;
 import model.Ingrediente;
 import model.Pizza;
-import model.Utente;
 
 public class PizzaDAO {
 	static EntityManagerFactory emf = JPAAgent.getEntityManagerFactory();
